@@ -44,7 +44,7 @@ class NotificationController extends Controller
         }
     }
 
-    public function markUserNotificationsAsRead($user_id=1)
+    public function markUserNotificationsAsRead($user_id)
     {
         $user = User::where('id', $user_id)->first();
 

@@ -11,6 +11,7 @@ class NotificationType extends Model
 
     /**
      * dates attribute.
+     *
      * @var array
      */
     protected $dates = [
@@ -22,6 +23,7 @@ class NotificationType extends Model
 
     /**
      * Attributes that are assignable.
+     *
      * @var array
      */
     protected $fillable = [
@@ -30,4 +32,26 @@ class NotificationType extends Model
         'amount',
         'note'
     ];
+
+    /**
+     * Attributes that are hidden.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    /*
+    |------------------------------------------------
+    | Relationships
+    |------------------------------------------------
+    */
+
+    public function notifications()
+    {
+        return $this->hasMany('\App\Models\Notification', 'notification_type_id');
+    }
 }

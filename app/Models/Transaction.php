@@ -11,6 +11,7 @@ class Transaction extends Model
 
     /**
      * dates attribute.
+     *
      * @var array
      */
     protected $dates = [
@@ -22,11 +23,12 @@ class Transaction extends Model
 
     /**
      * Attributes that are assignable.
+     *
      * @var array
      */
     protected $fillable = [
-        'from',
-        'to',
+        'from_user',
+        'to_user',
         'amount',
         'note'
     ];

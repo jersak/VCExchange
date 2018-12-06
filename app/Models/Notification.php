@@ -11,6 +11,7 @@ class Notification extends Model
 
     /**
      * dates attribute.
+     *
      * @var array
      */
     protected $dates = [
@@ -22,6 +23,7 @@ class Notification extends Model
 
     /**
      * Attributes that are assignable.
+     *
      * @var array
      */
     protected $fillable = [
@@ -29,4 +31,47 @@ class Notification extends Model
         'notification_type_id',
         'is_read',
     ];
+
+    /**
+     * Attributes that are hidden.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'updated_at',
+        'deleted_at',
+    ];
+
+    /**
+     * Appended data
+     *
+     * @var array
+     */
+    protected $appends = [
+        'notificationType',
+    ];
+
+
+    /*
+    |------------------------------------------------
+    | Relationships
+    |------------------------------------------------
+    */
+
+    public function notificationType()
+    {
+        return $this->belongsTo('\App\Models\NotificationType', 'notification_type_id');
+    }
+
+
+    /*
+    |------------------------------------------------
+    | Attributes
+    |------------------------------------------------
+    */
+
+    public function getnotificationTypeAttribute()
+    {
+        return $this->notificationType()->first();
+    }
 }

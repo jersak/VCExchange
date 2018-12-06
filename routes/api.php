@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 $router->group(['prefix' => 'notifications'], function () use ($router) {
-    $router->post('/', 'NotificationController@markUserNotificationsAsRead');
+    $router->post('/', 'TransactionController@createTransaction');
 });

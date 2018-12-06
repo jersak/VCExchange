@@ -7,10 +7,9 @@ use App\Models\Notification;
 use App\Models\NotificationType;
 use Illuminate\Http\Request;
 
-
 class NotificationController extends Controller
 {
-    public function sendNotification($to_user, $type)
+    public function createNotification($to_user, $type)
     {
         $user = User::where('id', $to_user)->first();
 
@@ -38,8 +37,37 @@ class NotificationController extends Controller
             $notification->save();
 
             return response()->json($notification);
-
         } catch (\Exception $e) {
+            return response()->json(array("errorCode" => $e->getCode(), "errorMessage" => $e->getMessage()), 500);
+        }
+    }
+
+    public function getNotifications($user_id, $unread = false)
+    {
+        $user = User::where('id', $user_id)->first();
+
+        if (empty($user)) {
+            return response()->json(
+                'User not found.',
+                404
+            );
+        }
+
+        try {
+            $notifications = Notification::where('to_user', $user_id)
+                ->when($unread, function ($q) use ($unread) {
+                        return $q->where('is_read', false);
+                })->paginate();
+
+            if (!empty($notifications)) {
+                return response()->json($notifications);
+            }
+
+            return response()->json(
+                'No notifications found.',
+                404
+            );
+        } catch (Exception $e) {
             return response()->json(array("errorCode" => $e->getCode(), "errorMessage" => $e->getMessage()), 500);
         }
     }
@@ -59,14 +87,15 @@ class NotificationController extends Controller
             $notifications = Notification::where('to_user', $user_id)->where('is_read', false)->get();
 
             if (!empty($notifications)) {
-                $notifications->each(function ($item, $key) {
-                    $item->is_read = 1;
-                    $item->save();
-                });
+                $notifications->each(
+                    function ($item, $key) {
+                        $item->is_read = 1;
+                        $item->save();
+                    }
+                );
             }
 
             return response('', 204);
-
         } catch (\Exception $e) {
             return response()->json(array("errorCode" => $e->getCode(), "errorMessage" => $e->getMessage()), 500);
         }

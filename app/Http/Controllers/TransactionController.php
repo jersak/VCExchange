@@ -97,7 +97,7 @@ class TransactionController extends Controller
 
     public function getUserTransactions($user_id)
     {
-        $transactions = Transaction::where('from_user',$user_id)
+        $transactions = Transaction::where('from_user', $user_id)
                         ->orWhere('to_user', $user_id)
                         ->get();
 

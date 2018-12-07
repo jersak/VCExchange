@@ -1,3 +1,7 @@
+@php
+    $notificationsObject = new App\Http\Controllers\NotificationController;
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -33,7 +37,6 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -49,19 +52,27 @@
                                 @endif
                             </li>
                         @else
+                            <script>
+                                var user_id = {{Auth::user()->id}};
+                            </script>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
-                                    <span class="counter">99</span>
+                                    <span class="caret"><img src="icons/bell.png" height=25px width=25px></span>
+                                    <span class="counter">{{$notificationsObject->getNotifications(Auth::user()->id, true)->count()}}</span>
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
+                                    @if ($notificationsObject->getNotifications(Auth::user()->id, true)->count() == 0)
+                                        <div class="dropdown-item">
+                                            You don't have any new notifications.
+                                        </div>
+                                    @else
+                                        @foreach($notificationsObject->getNotifications(Auth::user()->id, true) as $notification)
+                                            <div class="dropdown-item">
+                                                {{$notification->notificationType->notification_message}}
+                                            </div>
+                                        @endforeach
+                                    @endif
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>

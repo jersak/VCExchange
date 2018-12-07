@@ -3,30 +3,22 @@
 $( document ).ready(function() {
     var toggle = $('.dropdown-toggle')
 
-    console.log(toggle)
-
     toggle.click(doTheCall);
 
     addTransferFields();
 });
 
 function doTheCall() {
-	console.log('clicked')
-
 	var counter = $('.dropdown-toggle .counter');
 
 	let xhr = new XMLHttpRequest();
-	let path = 'api/notifications/read/1'
+	let path = 'api/notifications/read/'+user_id;
 
 	xhr.open('POST', path);
 
 	xhr.send();
 
 	xhr.onload = function() {
-	  // we can check
-	  // status, statusText - for response HTTP status
-	  // responseText, responseXML (when content-type: text/xml) - for the response
-
 	  if (this.status != 204) {
 	    // handle error
 	    alert( 'error: ' + this.status);
@@ -35,13 +27,11 @@ function doTheCall() {
 	    return;
 	  }
 
-  		// get the response from this.responseText
-
 		counter.text('0')
 	};
 
 	xhr.onerror = function() {
-	  // handle error
+	  console.log('Something went wrong');
 	};
 }
 
@@ -49,7 +39,7 @@ function addTransferFields(){
 	var maxField = 10; //Input fields increment limitation
     var addButton = $('.add_button'); //Add button selector
     var wrapper = $('.field_wrapper'); //Input field wrapper
-    var fieldHTML = '<div><hr>Destinatary:<br><input type="email" name="to[]" value=""/><br>Amount:<br><input type="text" name="amount[]" value=""/><a href="javascript:void(0);" class="remove_button">-</a></div>'; //New input field html 
+    var fieldHTML = '<div><hr>Destinatary:<br><input type="email" name="to[]" value=""/><br>Amount:<br><input type="number" step="0.01" min="0.01" name="amount[]" value=""/><br>Note:<br><input type="text" name="note[]" value=""/><a href="javascript:void(0);" class="remove_button">-</a></div>'; //New input field html 
     var x = 1; //Initial field counter is 1
     
     //Once add button is clicked

@@ -92,7 +92,46 @@ class TransactionController extends Controller
             return response()->json($validator->errors()->messages(), 422);
         }
 
-        dd($request->all());
+        $from = User::where('email', $request->from)->first();
+
+        $transactionsTotal = array_sum($request->amount);
+
+        if ($transactionsTotal > $from->virtual_currency) {
+            return response()->json(['amount' => ['You don\'t have enough VC to complete this transaction.']], 422);
+        }
+
+        foreach ($request->to as $key => $value) {
+            try {
+                // Start DB transaction to ensure the transfer is executed atomically
+                DB::beginTransaction();
+
+                $to = User::where('email', $value)->first();
+
+                $from->virtual_currency -= $request->amount[$key];
+                $from->save();
+
+                $to->virtual_currency += $request->amount[$key];
+                $to->save();
+
+                $transaction = new Transaction;
+                $transaction->from_user = $from->id;
+                $transaction->to_user = $to->id;
+                $transaction->amount = $request->amount[$key];
+
+                if (isset($request->note[$key])) {
+                    $transaction->note = $request->note[$key];
+                }
+
+                $transaction->save();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(array("errorCode" => $e->getCode(), "errorMessage" => $e->getMessage()), 500);
+            }
+
+            DB::commit();
+        }
+
+        return redirect()->route('home');
     }
 
     public function getUserTransactions($user_id)

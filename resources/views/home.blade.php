@@ -15,6 +15,15 @@
                         </div>
                     @endif
                     Name: {{ Auth::user()->name }}
+                    <a  href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                 document.getElementById('logout-form').submit();">
+                                    {{ __('(Logout)') }}
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
                     <br>
                     Email: {{ Auth::user()->email }}
                     <br>
@@ -30,7 +39,8 @@
                         <div class="field_wrapper">
                             <div>
                                 Destinatary:<br><input type="email" name="to[]" value=""/><br>
-                                Amount:<br><input type="text" name="amount[]" value=""/>
+                                Amount:<br><input type="number" step="0.01" min="0.01" name="amount[]" value=""/><br>
+                                Note:<br><input type="text" name="note[]" value=""/>
                                 <a href="javascript:void(0);" class="add_button" title="Add field">+</a>
                             </div>
                         </div><br>

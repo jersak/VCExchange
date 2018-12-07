@@ -69,4 +69,38 @@ class TransactionController extends Controller
 
         return response()->json($transaction, 200);
     }
+
+    public function createBulkTransactions(Request $request)
+    {
+        $messages = [
+            'different'    => 'You must send VC to someone else.',
+        ];
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'from'      => 'required|email|exists:users,email',
+                'to'        => 'required',
+                'to.*'      => 'required|email|different:from|exists:users,email',
+                'amount'    => 'required',
+                'amount.*'  => 'required|numeric|min:0.01',
+            ],
+            $messages
+        );
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 422);
+        }
+
+        dd($request->all());
+    }
+
+    public function getUserTransactions($user_id)
+    {
+        $transactions = Transaction::where('from_user',$user_id)
+                        ->orWhere('to_user', $user_id)
+                        ->get();
+
+        return $transactions;
+    }
 }

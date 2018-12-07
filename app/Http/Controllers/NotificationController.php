@@ -42,7 +42,7 @@ class NotificationController extends Controller
         }
     }
 
-    public function getNotifications($user_id, $unread = false)
+    public function getNotifications($user_id, Request $request)
     {
         $user = User::where('id', $user_id)->first();
 
@@ -55,7 +55,7 @@ class NotificationController extends Controller
 
         try {
             $notifications = Notification::where('to_user', $user_id)
-                ->when($unread, function ($q) use ($unread) {
+                ->when($request->unread, function ($q) use ($request) {
                         return $q->where('is_read', false);
                 })->paginate();
 

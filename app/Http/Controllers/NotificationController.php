@@ -95,7 +95,7 @@ class NotificationController extends Controller
                 );
             }
 
-            return response('', 204);
+            return response()->json('', 204);
         } catch (\Exception $e) {
             return response()->json(array("errorCode" => $e->getCode(), "errorMessage" => $e->getMessage()), 500);
         }
